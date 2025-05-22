@@ -43,12 +43,35 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted:", { name, email });
-    setName("");
-    setEmail("");
-    onSuccess();
+
+    const contactFormUrl = process.env.REACT_APP_ZAP_URL
+    if (!contactFormUrl) {
+      console.error("Failed to send to Zapier, unknown zap url");
+      return;
+    }
+  
+    try {
+      const payload = { name, email };
+  
+      const res = await fetch(contactFormUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      if (res.ok) {
+        console.log("Data sent to Zapier:", payload);
+        setName("");
+        setEmail("");
+        onSuccess();
+      } else {
+        console.error("Failed to send to Zapier", await res.text());
+      }
+    } catch (err) {
+      console.error("Error sending to Zapier", err);
+    }
   };
 
   return (
