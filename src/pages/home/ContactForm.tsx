@@ -46,7 +46,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const contactFormUrl = process.env.REACT_APP_ZAP_URL
+    const contactFormUrl = import.meta.env.VITE_ZAP_URL as string
+    console.log(contactFormUrl)
+    return;
+
     if (!contactFormUrl) {
       console.error("Failed to send to Zapier, unknown zap url");
       return;
